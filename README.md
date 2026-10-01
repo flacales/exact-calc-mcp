@@ -67,7 +67,13 @@
 pip install -e .
 ```
 
-只依赖官方 `mcp` SDK。C++ 引擎是**可选**的，找不到编译器会自动跳过，不影响使用。
+只依赖官方 `mcp` SDK（**锁在 1.x**，见下方说明）。C++ 引擎是**可选**的，找不到编译器会自动跳过，不影响使用。
+
+> **为什么锁 `mcp<2`**：mcp 2.0 把 `FastMCP` 改名成了 `MCPServer`
+> （`mcp.server.mcpserver`），`mcp.server.fastmcp` 变成一个会主动抛
+> `ModuleNotFoundError` 的占位模块。本项目按 1.x 的 API 写，所以
+> `pyproject.toml` 里写的是 `mcp>=1.0.0,<2.0.0`。迁移到 2.x 见
+> [官方迁移指南](https://py.sdk.modelcontextprotocol.io/v2/migration/)。
 
 ---
 

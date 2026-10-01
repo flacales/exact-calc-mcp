@@ -47,6 +47,12 @@
 - MCP 客户端 `initialize` 时收到的 `serverInfo.version` 是 mcp SDK 的版本号
   而不是本项目版本 —— `FastMCP` 的构造签名没有 `version` 参数，
   底层 `Server` 会回落到 `pkg_version("mcp")`。现显式设置。
+- **把依赖锁到 `mcp>=1.0.0,<2.0.0`。** mcp 2.0 是破坏性大版本：
+  `FastMCP` 被改名为 `MCPServer`（`mcp.server.mcpserver`），
+  `mcp.server.fastmcp` 变成一个主动 `raise ModuleNotFoundError` 的占位模块。
+  原来写 `mcp>=1.0.0`，新环境一律装到 2.x，服务一启动就 ImportError。
+  （SDK 自己在那个占位模块里就建议 `pin 'mcp<2' to keep running v1 code`。）
+  迁移到 2.x 见 <https://py.sdk.modelcontextprotocol.io/v2/migration/>
 
 [Unreleased]: https://github.com/flacales/exact-calc-mcp/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/flacales/exact-calc-mcp/releases/tag/v0.1.0

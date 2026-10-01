@@ -27,13 +27,20 @@ mcp = FastMCP(
     ),
 )
 
-# FastMCP 的构造签名里没有 version 参数（mcp 1.28.1），而底层 Server 在
+# FastMCP 的构造签名里没有 version 参数（mcp 1.x），而底层 Server 在
 # version 为空时会回落到 mcp SDK 自己的版本号：
 #     server_version=self.version if self.version else pkg_version("mcp")
 # 结果是客户端 initialize 时收到的 serverInfo.version 变成 SDK 的版本
 # （"1.28.1"），而不是本项目的版本。这里补上——没有公开 API 可传，
-# 只能落到 lowlevel 实例上。上游若暴露 version 参数即可删除本行。
-mcp._mcp_server.version = __version__
+# 只能落到 lowlevel 实例上。
+#
+# 用 try 兜住：版本号不准是小事，服务起不来是大事。
+# （mcp 2.x 已经把 FastMCP 改名为 MCPServer，本项目锁了 mcp<2，
+#   见 pyproject.toml 的说明。）
+try:
+    mcp._mcp_server.version = __version__
+except AttributeError:  # pragma: no cover - 换 SDK 版本时的保险
+    pass
 
 
 @mcp.tool()

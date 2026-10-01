@@ -24,7 +24,13 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Mathematics",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-dependencies = ["mcp>=1.0.0"]
+# mcp 必须锁在 1.x。
+# mcp 2.0 是一次破坏性大版本：FastMCP 被重命名为 MCPServer
+# （mcp.server.mcpserver.MCPServer），mcp.server.fastmcp 变成一个
+# 主动 raise ModuleNotFoundError 的占位模块。本项目按 1.x 的 API 写，
+# 不锁的话 pip 会装到 2.x，服务一启动就 ImportError。
+# 迁移到 2.x 见 https://py.sdk.modelcontextprotocol.io/v2/migration/
+dependencies = ["mcp>=1.0.0,<2.0.0"]
 
 [project.optional-dependencies]
 dev = ["pytest>=7"]
