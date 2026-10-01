@@ -1,0 +1,34 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.flacales/exact-calc-mcp",
+  "description": "Exact arithmetic for AI agents. Two independently written engines cross-check every result before it is returned.",
+  "title": "exact-calc",
+  "repository": {
+    "url": "https://github.com/flacales/exact-calc-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "exact-calc-mcp",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "runtimeHint": "uvx",
+      "runtimeArguments": [
+        {
+          "type": "positional",
+          "value": "exact-calc-mcp",
+          "description": "Package to run; the console script is started with --serve"
+        },
+        {
+          "type": "positional",
+          "value": "--serve",
+          "description": "Start as an MCP stdio server"
+        }
+      ]
+    }
+  ]
+}

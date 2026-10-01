@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 报告安全漏洞
+    url: https://github.com/flacales/exact-calc-mcp/security/advisories/new
+    about: 请私下报告，不要开公开 issue
+  - name: 💬 提问 / 讨论
+    url: https://github.com/flacales/exact-calc-mcp/discussions
+    about: 用法疑问、集成问题、想法交流
+  - name: 📖 先读 README
+    url: https://github.com/flacales/exact-calc-mcp#readme
+    about: 安装、客户端配置、工具说明、已知局限都在里面

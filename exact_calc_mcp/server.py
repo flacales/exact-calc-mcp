@@ -27,6 +27,14 @@ mcp = FastMCP(
     ),
 )
 
+# FastMCP 的构造签名里没有 version 参数（mcp 1.28.1），而底层 Server 在
+# version 为空时会回落到 mcp SDK 自己的版本号：
+#     server_version=self.version if self.version else pkg_version("mcp")
+# 结果是客户端 initialize 时收到的 serverInfo.version 变成 SDK 的版本
+# （"1.28.1"），而不是本项目的版本。这里补上——没有公开 API 可传，
+# 只能落到 lowlevel 实例上。上游若暴露 version 参数即可删除本行。
+mcp._mcp_server.version = __version__
+
 
 @mcp.tool()
 def calculate(expression: str, precision: int = 50) -> dict:

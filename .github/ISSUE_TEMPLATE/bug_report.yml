@@ -1,0 +1,68 @@
+name: 🐛 Bug 报告
+description: 结果算错了、工具报错、或者跟文档不一致
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。**如果是安全问题（绕过白名单、拒绝服务、护栏失效），请不要用这个模板**，
+        改用 [私密报告](https://github.com/flacales/exact-calc-mcp/security/advisories/new)。
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 发生了什么
+      description: 说清你期望的结果和实际的结果
+      placeholder: |
+        我输入 `0.1 + 0.2`，期望得到 `3/10`，实际得到 ……
+    validations:
+      required: true
+
+  - type: textarea
+    id: expression
+    attributes:
+      label: 触发用的表达式
+      description: 请给**原文**，不要转述
+      render: text
+      placeholder: '(0.1 + 0.2) * 3'
+    validations:
+      required: true
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: 通过哪种方式调用的
+      options:
+        - MCP 客户端（Claude Desktop / Cursor / VS Code / Codex / …）
+        - 命令行 exact-calc
+        - Python 里 import exact_calc_mcp
+        - 其他
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: 贴 `exact-calc --version` 的输出
+      placeholder: exact-calc-mcp 0.1.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: doctor
+    attributes:
+      label: 引擎状态
+      description: 贴 `exact-calc --doctor` 的输出（能区分是 Python 引擎还是 C++ 引擎的问题）
+      render: text
+    validations:
+      required: false
+
+  - type: input
+    id: environment
+    attributes:
+      label: 系统与 Python 版本
+      placeholder: Windows 11 / Python 3.12.4
+    validations:
+      required: true

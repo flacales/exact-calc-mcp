@@ -1,0 +1,51 @@
+name: ✨ 功能建议
+description: 新函数、新常量、新工具，或者行为上的改进
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提之前建议先看一眼 README 的「局限（诚实说明）」一节 ——
+        里面列了不少**已知且有意为之**的取舍（比如不支持复数、不做符号计算）。
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 你想解决什么问题
+      description: 描述场景，而不是直接给方案
+      placeholder: |
+        我在做 XXX 的时候需要 YYY，现在只能……
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 你设想的做法
+      description: 可选。有具体想法就写，没有也行
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: 涉及哪一块
+      options:
+        - 表达式语法 / 新增函数
+        - 数值域（Fraction / Decimal）
+        - 交叉验证 / C++ 引擎
+        - MCP 工具接口
+        - 命令行
+        - 文档
+        - 其他
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: willing
+    attributes:
+      label: 你愿意提 PR 吗
+      options:
+        - label: 我愿意自己实现这个功能
+          required: false

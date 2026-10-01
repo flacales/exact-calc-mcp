@@ -1,0 +1,77 @@
+name: Publish to MCP Registry
+
+# 前提条件（两条都满足才能跑通）：
+#   1. exact-calc-mcp 已经发布到 PyPI —— server.json 里写的是 registryType=pypi
+#   2. 仓库 Settings → Secrets → Actions 里配好 MCP_REGISTRY_DNS_PRIVATE_KEY
+#      （或改成下面的 GitHub OIDC 登录方式，就不用配 secret）
+#
+# 手动触发：Actions → Publish to MCP Registry → Run workflow
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # mcp-publisher 用 GitHub OIDC 验证 io.github.* 命名空间的归属
+
+jobs:
+  publish:
+    name: Publish to MCP Registry
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验 server.json 与 pyproject.toml 一致
+        run: |
+          set -e
+          NAME=$(jq -r .name server.json)
+          SVER=$(jq -r .version server.json)
+          PVER=$(python -c "import tomllib,sys;print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          IDENT=$(jq -r '.packages[0].identifier' server.json)
+          PKGVER=$(jq -r '.packages[0].version' server.json)
+          REPO=$(jq -r .repository.url server.json)
+
+          echo "server.json name      = $NAME"
+          echo "server.json version   = $SVER"
+          echo "pyproject version     = $PVER"
+          echo "package identifier    = $IDENT"
+
+          [ "$NAME" = "io.github.flacales/exact-calc-mcp" ] || { echo "::error::namespace 必须是 io.github.flacales/*"; exit 1; }
+          [ "$SVER" = "$PVER" ]      || { echo "::error::server.json 与 pyproject.toml 版本不一致"; exit 1; }
+          [ "$SVER" = "$PKGVER" ]    || { echo "::error::packages[0].version 与顶层 version 不一致"; exit 1; }
+          [ "$IDENT" = "exact-calc-mcp" ] || { echo "::error::PyPI 包名应为 exact-calc-mcp"; exit 1; }
+          [ "$REPO" = "https://github.com/flacales/exact-calc-mcp" ] || { echo "::error::repository.url 不对"; exit 1; }
+
+      - name: 确认已发布到 PyPI
+        run: |
+          set -e
+          V=$(jq -r .version server.json)
+          if ! curl -fsS "https://pypi.org/pypi/exact-calc-mcp/$V/json" > /dev/null; then
+            echo "::error::PyPI 上还没有 exact-calc-mcp $V —— 先跑 Publish to PyPI 工作流"
+            exit 1
+          fi
+          echo "PyPI 上已存在 exact-calc-mcp $V"
+
+      - name: 安装 mcp-publisher
+        run: |
+          OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+          ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_${OS}_${ARCH}.tar.gz" | tar xz mcp-publisher
+          sudo mv mcp-publisher /usr/local/bin/
+          mcp-publisher --help
+
+      - name: 用 GitHub OIDC 登录
+        run: mcp-publisher login github-oidc
+
+      - name: 发布到 MCP Registry
+        run: mcp-publisher publish
+
+      - name: 在 Registry 上验证
+        run: |
+          NAME=$(jq -r .name server.json)
+          sleep 5
+          curl -sS "https://registry.modelcontextprotocol.io/v0.1/servers?search=${NAME}" \
+            | jq --arg name "$NAME" '{name: $name, found: (.servers | map(select(.server.name == $name)) | length)}'

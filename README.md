@@ -1,5 +1,11 @@
 # exact-calc-mcp
 
+[![CI](https://github.com/flacales/exact-calc-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/flacales/exact-calc-mcp/actions/workflows/ci.yml)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-3776AB.svg?logo=python&logoColor=white)](pyproject.toml)
+[![MCP](https://img.shields.io/badge/MCP-server-6E56CF.svg)](https://registry.modelcontextprotocol.io/)
+[![Tests](https://img.shields.io/badge/tests-44%20passing-brightgreen.svg)](tests/)
+
 **让 AI 用代码精确计算，而不是靠猜。**
 
 给 AI agent 用的精确计算工具。通过 MCP 或命令行调用，结果由**两个独立编写的引擎**交叉验证后才返回。
@@ -59,21 +65,117 @@ pip install -e .
 
 ## 用法一：接入 MCP 客户端
 
-任何支持 MCP 的客户端都能直接用。以 Claude Desktop 为例，编辑
-`claude_desktop_config.json`：
+任何支持 MCP 的客户端都能直接用。下面覆盖了主流的几种。
+
+先记住两条命令，下面所有配置无非是换一种写法：
+
+```bash
+# 不用安装（uv 会自动拉到临时环境）
+uvx --from git+https://github.com/flacales/exact-calc-mcp exact-calc --serve
+
+# 或本地装好后
+pip install -e . && python -m exact_calc_mcp --serve
+```
+
+<details open>
+<summary><b>Claude Desktop</b></summary>
+
+编辑 `claude_desktop_config.json`（macOS：`~/Library/Application Support/Claude/`；
+Windows：`%APPDATA%\Claude\`）：
 
 ```json
 {
   "mcpServers": {
     "exact-calc": {
-      "command": "python",
-      "args": ["-m", "exact_calc_mcp", "--serve"]
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/flacales/exact-calc-mcp", "exact-calc", "--serve"]
     }
   }
 }
 ```
 
-Cursor、Cline、Continue 等客户端的配置方式类似。
+</details>
+
+<details>
+<summary><b>Claude Code</b></summary>
+
+```bash
+claude mcp add exact-calc -- uvx --from git+https://github.com/flacales/exact-calc-mcp exact-calc --serve
+```
+
+</details>
+
+<details>
+<summary><b>Cursor</b></summary>
+
+编辑 `~/.cursor/mcp.json`（全局）或项目里的 `.cursor/mcp.json`：
+
+```json
+{
+  "mcpServers": {
+    "exact-calc": {
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/flacales/exact-calc-mcp", "exact-calc", "--serve"]
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><b>VS Code</b></summary>
+
+编辑 `.vscode/mcp.json`（工作区）或用户设置里的 `mcp` 段。
+注意 VS Code 用的键是 `servers` 而不是 `mcpServers`，并且要显式写 `type`：
+
+```json
+{
+  "servers": {
+    "exact-calc": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/flacales/exact-calc-mcp", "exact-calc", "--serve"]
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><b>Codex</b></summary>
+
+编辑 `~/.codex/config.toml`：
+
+```toml
+[mcp_servers.exact-calc]
+command = "uvx"
+args = ["--from", "git+https://github.com/flacales/exact-calc-mcp", "exact-calc", "--serve"]
+```
+
+</details>
+
+<details>
+<summary><b>Cline / Continue / 其他</b></summary>
+
+配置结构基本一致，都是 `mcpServers` 下加一项：
+
+```json
+{
+  "mcpServers": {
+    "exact-calc": {
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/flacales/exact-calc-mcp", "exact-calc", "--serve"]
+    }
+  }
+}
+```
+
+</details>
+
+> 不想用 `uvx` 也行：把 `command` 换成 `python`、`args` 换成
+> `["-m", "exact_calc_mcp", "--serve"]`，前提是那个 Python 环境里装了本项目。
 
 ### 提供的工具
 
@@ -228,11 +330,20 @@ C++ 引擎明确不支持的函数（`factorial`、`gcd` 等）会返回退出�
 python -m unittest discover -s tests -v
 ```
 
-38 个用例，覆盖三块：
+**44 个用例，全绿**，覆盖四块：
+
+| 文件 | 用例 | 测什么 |
+|---|--:|---|
+| `tests/test_engine.py` | 38 | 精确性、安全性、交叉验证 |
+| `tests/test_mcp_protocol.py` | 6 | MCP 协议层：stdio 上的 JSON-RPC 握手、`tools/list`、`tools/call`、注入拒绝 |
+
+具体地：
 
 - **精确性**：浮点误差被消除、大整数不丢精度、优先级与 Python 一致
 - **安全性**：14 个注入/越权表达式全部被拒
 - **交叉验证**：两路结果一致；C++ 超范围时正确跳过而非误报
+- **协议**：`serverInfo.version` 是项目版本而**不是 mcp SDK 的版本**；
+  5 个工具都在且都有描述（描述是给模型读的 prompt，缺了模型就不会调）
 
 ---
 
@@ -248,6 +359,29 @@ python -m unittest discover -s tests -v
 
 ---
 
+## 贡献
+
+欢迎 issue 和 PR。开始之前请读 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
+跑测试只要一条命令，不需要额外依赖：
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+## 安全
+
+这个工具**不执行任意代码** —— 表达式经 `ast` 白名单逐节点求值，不走 `eval()`，
+属性访问、下标、lambda、推导式一律拒绝。相关测试在
+`tests/test_engine.py` 的「安全性」一节。
+
+如果你发现了绕过白名单、拒绝服务或资源护栏失效的问题，
+请按 [SECURITY.md](SECURITY.md) 的方式**私下报告**，不要开公开 issue。
+
+## 变更记录
+
+见 [CHANGELOG.md](CHANGELOG.md)。
+
 ## License
 
-MIT
+MIT —— 见 [LICENSE](LICENSE)。
