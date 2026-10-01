@@ -1,5 +1,13 @@
 # exact-calc-mcp
 
+<!-- mcp-name: io.github.flacales/exact-calc-mcp -->
+<!--
+  上一行是 MCP Registry 用来验证 PyPI 包归属的标记：Registry 会在包的 README
+  （即 PyPI 上的 description）里找 `mcp-name: <server.json 里的 name>`。
+  它必须在单独一行、或放在 HTML 注释里，且不能紧跟句号之类的字符，
+  否则匹配不到。改 server.json 的 name 时记得同步改这里。
+-->
+
 [![CI](https://github.com/flacales/exact-calc-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/flacales/exact-calc-mcp/actions/workflows/ci.yml)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-3776AB.svg?logo=python&logoColor=white)](pyproject.toml)
