@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "exact-calc-mcp"
+version = "0.1.0"
+description = "Exact arithmetic for AI agents. Two independently written engines cross-check every result."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "exact-calc-mcp contributors" }]
+keywords = ["mcp", "calculator", "llm", "agent", "exact-arithmetic", "decimal", "fraction"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: C++",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = ["mcp>=1.0.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+exact-calc = "exact_calc_mcp.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/flacales/exact-calc-mcp"
+Issues = "https://github.com/flacales/exact-calc-mcp/issues"
+
+[tool.setuptools]
+packages = ["exact_calc_mcp"]
+
+# 注意：C++ 源码放在仓库根目录的 cpp/ 下，不随 wheel 分发。
+# engine_cpp.py 会按 环境变量 EXACT_CALC_SOURCE -> 仓库布局 -> 包内布局
+# 的顺序去找它。pip 安装的用户想要 C++ 交叉验证，需要一份仓库检出，
+# 或者用 EXACT_CALC_SOURCE 指到 calc.cpp。找不到就自动跳过，不影响主功能。
