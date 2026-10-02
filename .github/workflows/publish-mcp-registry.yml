@@ -1,19 +1,14 @@
 name: Publish to MCP Registry
 
-# 目前是**手动触发**——两个前提都还没满足，跟着 Release 自动跑必然失败：
-#   1. exact-calc-mcp 还没发布到 PyPI（server.json 里写的是 registryType=pypi）
-#   2. 仓库 Settings 里还没配 MCP_REGISTRY_DNS_PRIVATE_KEY
-#
-# 两个前提满足后，把下面两行 release 触发器打开即可：
-#
-#   on:
-#     release:
-#       types: [published]
-#     workflow_dispatch:
-#
-# 手动触发：Actions → Publish to MCP Registry → Run workflow
+# 前提已满足，跟着 Release 自动跑：
+#   1. exact-calc-mcp 已发布到 PyPI（0.1.0）
+#   2. 用 GitHub OIDC 登录，不需要任何 secret
+# 工作流内部会先确认目标版本确实已在 PyPI 上，不在就明确报错。
+# 临时关闭自动发布：把 release 那两行注释掉。
 
 on:
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:

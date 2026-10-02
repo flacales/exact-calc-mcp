@@ -1,21 +1,12 @@
 name: Publish to PyPI
 
-# 目前是**手动触发**——因为 PyPI 那边还没配 Trusted Publishing。
-# 配好之后把下面两行 release 触发器打开，就能跟着 Release 自动发布：
-#
-#   on:
-#     release:
-#       types: [published]
-#     workflow_dispatch:
-#
-# 配置步骤（一次性）：
-#   1. 在 PyPI 建项目 exact-calc-mcp
-#   2. PyPI → 项目 → Publishing → 添加 GitHub publisher
-#        所有者 flacales / 仓库 exact-calc-mcp / 工作流 publish-pypi.yml / 环境 release
-#   3. 本仓库 Settings → Environments 建一个名为 release 的环境
-#   不需要在仓库里存任何 token。
+# PyPI 侧的 Trusted Publishing 已配好：pending publisher 在 0.1.0 首次发布时
+# 已自动转为正式 publisher。所以现在跟着 Release 自动跑。
+# 万一以后要临时关掉自动发布，把 release 那两行注释掉即可。
 
 on:
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
