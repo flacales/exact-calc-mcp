@@ -14,7 +14,7 @@
 [![MCP](https://img.shields.io/badge/MCP-server-6E56CF.svg)](https://registry.modelcontextprotocol.io/)
 [![Tests](https://img.shields.io/badge/tests-44%20passing-brightgreen.svg)](tests/)
 
-**让 AI 用代码精确计算，而不是靠猜。**
+**让 AI 使用电脑的python和c++计算**
 
 给 AI agent 用的精确计算工具。通过 MCP 或命令行调用，结果由**两个独立编写的引擎**交叉验证后才返回。
 
@@ -22,7 +22,7 @@
 
 ---
 
-## 问题：LLM 不做算术
+## 问题
 
 这不是"模型不够聪明"，是架构决定的。语言模型是自回归生成器，它输出的是**在统计上最像答案的 token 序列**。它没有算术电路，没有进位链，没有中间寄存器。
 
